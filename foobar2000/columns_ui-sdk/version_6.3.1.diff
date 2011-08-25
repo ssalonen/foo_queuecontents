@@ -1,0 +1,63 @@
+--- columns_ui.h	Tue Jan 20 00:26:36 1970
++++ columns_ui.h	Tue Jan 20 00:26:36 1970
+@@ -101,7 +101,7 @@
+ 			for (n=0;n<count;n++)
+ 			{
+ 				const char * ptr = get_item(n)->get_name();
+-				if (!stricmp_utf8_ex(p_name,length,ptr,pfc::infinite_size))
++				if (!stricmp_utf8_ex(p_name,length,ptr,infinite))
+ 					return get_item(n)->get_value();
+ 			}
+ 			return 0;
+--- splitter.h	Tue Jan 20 00:26:36 1970
++++ splitter.h	Tue Jan 20 00:26:36 1970
+@@ -238,7 +238,7 @@
+ 		/** This method may be called on both active and inactive (i.e. no window) instances */
+ 		virtual void replace_panel(t_size index, const splitter_item_t * p_item)=0;
+ 		virtual t_size get_panel_count()const=0;
+-		virtual t_size get_maximum_panel_count()const{return pfc::infinite_size;};
++		virtual t_size get_maximum_panel_count()const{return infinite;};
+ 
+ 		/** Reserved for future use */
+ 		virtual void register_callback(splitter_callback * p_callback){};
+--- window.h	Tue Jan 20 00:26:36 1970
++++ window.h	Tue Jan 20 00:26:36 1970
+@@ -398,7 +398,7 @@
+ 	class window_factory : public service_factory_base
+ 	{
+ 	public:
+-		window_factory() : service_factory_base(window::class_guid,  service_factory_traits<window>::factory_list())
++		window_factory() : service_factory_base(window::class_guid)
+ 		{
+ 		}
+ 
+--- base.h	Tue Jan 20 00:26:36 1970
++++ base.h	Tue Jan 20 00:26:36 1970
+--- buttons.h	Tue Jan 20 00:26:36 1970
++++ buttons.h	Tue Jan 20 00:26:36 1970
+--- columns_ui.cpp	Tue Jan 20 00:26:36 1970
++++ columns_ui.cpp	Tue Jan 20 00:26:36 1970
+--- columns_ui_appearance.h	Tue Jan 20 00:26:36 1970
++++ columns_ui_appearance.h	Tue Jan 20 00:26:36 1970
+--- helpers.h	Tue Jan 20 00:26:36 1970
++++ helpers.h	Tue Jan 20 00:26:36 1970
+--- imp_helper.h	Tue Jan 20 00:26:36 1970
++++ imp_helper.h	Tue Jan 20 00:26:36 1970
+--- menu.h	Tue Jan 20 00:26:36 1970
++++ menu.h	Tue Jan 20 00:26:36 1970
+--- ui_extension.cpp	Tue Jan 20 00:26:36 1970
++++ ui_extension.cpp	Tue Jan 20 00:26:36 1970
+--- ui_extension.h	Tue Jan 20 00:26:36 1970
++++ ui_extension.h	Tue Jan 20 00:26:36 1970
+--- visualisation.h	Tue Jan 20 00:26:36 1970
++++ visualisation.h	Tue Jan 20 00:26:36 1970
+--- win32_helpers.cpp	Tue Jan 20 00:26:36 1970
++++ win32_helpers.cpp	Tue Jan 20 00:26:36 1970
+--- win32_helpers.h	Tue Jan 20 00:26:36 1970
++++ win32_helpers.h	Tue Jan 20 00:26:36 1970
+--- window_helper.cpp	Tue Jan 20 00:26:36 1970
++++ window_helper.cpp	Tue Jan 20 00:26:36 1970
+--- window_helper.h	Tue Jan 20 00:26:36 1970
++++ window_helper.h	Tue Jan 20 00:26:36 1970
+--- window_host.h	Tue Jan 20 00:26:36 1970
++++ window_host.h	Tue Jan 20 00:26:36 1970
