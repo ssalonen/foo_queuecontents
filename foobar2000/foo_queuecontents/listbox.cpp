@@ -964,6 +964,9 @@ void CCustomListView::QueueRefresh() {
 	// Save selection
 	GetSelectedIndices(selection);
 
+	// Save focus
+	m_focused_item = GetNextItem(-1, LVNI_FOCUSED);
+
 	m_metadbs.remove_all();
 	DeleteAllItems();
 
@@ -976,7 +979,7 @@ void CCustomListView::QueueRefresh() {
 
 	// Try to restore focus marker
 	BOOL ret = SetItemState(min(GetItemCount() - 1, m_focused_item), LVIS_FOCUSED, LVIS_FOCUSED);
-	DEBUG_PRINT << "SetItemState(focused) successfull: " << ret;
+	DEBUG_PRINT << "SetItemState(focused) successful: " << ret << ". Focus index was: " << m_focused_item;
 	ShowFocusRectangle();
 
 	// Update m_selection
@@ -1856,11 +1859,20 @@ void CCustomListView::DeleteSelected() {
 	// Add all selected items to this array
 	int selectedCount = 0;
 	int pos = GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+	int focus_before_delete = GetNextItem(-1, LVNI_FOCUSED);
 	int firstSelected = pos;
-	while(pos >= 0) {	
+	while(pos >= 0) {
+		// Calculate focused item after delete
+		if(pos < focus_before_delete && focus_before_delete != -1) {
+			focus_before_delete--;
+		}
 		selected.set(pos, true);
 		selectedCount++;
 		pos = GetNextItem(pos, LVNI_ALL | LVNI_SELECTED);		
+	}
+
+	if(focus_before_delete == -1) {
+		focus_before_delete =  GetItemCount() - 1;
 	}
 
 	// Remove selection so it is not restored on update
@@ -1868,7 +1880,11 @@ void CCustomListView::DeleteSelected() {
 
 	// Set focus rectangle
 	int lastIndexAfterRemoval = GetItemCount() - selectedCount - 1;
-	m_focused_item = min(lastIndexAfterRemoval, firstSelected);	
+	m_focused_item = min(lastIndexAfterRemoval, focus_before_delete);	
+	DEBUG_PRINT << "Setting m_focused_item to: " << m_focused_item;
+
+	BOOL ret = SetItemState(m_focused_item, LVIS_FOCUSED, LVIS_FOCUSED);
+	DEBUG_PRINT << "CCustomListView::DeleteSelected: SetItemState(focused) successful: " << ret << ". Focus index was: " << m_focused_item;
 
 	queue_helpers::queue_remove_mask(selected);						
 }
