@@ -1735,7 +1735,17 @@ void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 	} else if(!controlPressed && !shiftPressed && (isDown || isUp || isPgDown || isPgUp)) {	
 		DEBUG_PRINT << "SelectRelativeToCurrentlyFocusedItem, No Shift"; 
 		SelectRelativeToCurrentlyFocusedItem(direction, page, false);
-	}  else {
+	} else if(nChar == VK_ESCAPE) {
+		DEBUG_PRINT << "Escape pressed. Closing the window!";
+		HWND parentOfParent = ::GetParent(GetParent());
+		HWND main = core_api::get_main_window();
+		if(main == ::GetParent(parentOfParent)) {
+			BOOL ret = ::PostMessage(parentOfParent, WM_CLOSE, (WPARAM) 0, (LPARAM) 0);
+			DEBUG_PRINT << "DestroyWindow success: " << ret;
+		} else {
+			DEBUG_PRINT << "Window closing cancelled (embedded element).";
+		}
+	} else {
 		DEBUG_PRINT << "Listview doesn't know what to do with this OnKeyDown => SetMsgHandled(FALSE)";
 		// We don't know what to do about it so let's someone else handle it
 		SetMsgHandled(FALSE);
@@ -1748,7 +1758,7 @@ void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 			DEBUG_PRINT << "Listview keydown event passed to keyboard_shortcut_manager.";
 			SetMsgHandled(TRUE);
 		} else {
-			DEBUG_PRINT << "Listview keydown event passed to keyboard_shortcut_manager but it rejected it.";
+			DEBUG_PRINT << "Listview keydown event passed to keyboard_shortcut_manager but it rejected it. Trying default handler.";
 		}
 	}
 }
@@ -1763,6 +1773,7 @@ void CCustomListView::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		SetMsgHandled(TRUE);
 	} else {
 		DEBUG_PRINT << "Listview syskeydown event passed to keyboard_shortcut_manager but it rejected it.";
+		SetMsgHandled(FALSE);
 	}
 }
 

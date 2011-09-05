@@ -18,6 +18,7 @@
 #include "../ATLHelpers/ATLHelpers.h"
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
+//#include "../SDK/component.h"
 //#include "atlframe.h" //WTL::CDialogResize
 //#include "atlctrlx.h" //WTL::CWaitCursor
 
