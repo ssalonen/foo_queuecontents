@@ -6,7 +6,7 @@
 #pragma once
 
 #define COMPONENTNAME "Queue Contents Editor"
-#define COMPONENTVERSION "0.4.4"
+#define COMPONENTVERSION "0.4.5"
 #define COMPONENTCONFIGVERSION 3
 #define TITLEFORMAT_WIKIPAGEURL "http://wiki.hydrogenaudio.org/index.php?title=Foobar2000:Titleformat_Reference"
 #define COMPONENT_WIKIPAGEURL "http://wiki.hydrogenaudio.org/index.php?title=Foobar2000:Components/Queue_Contents_Editor_(foo_queuecontents)"
