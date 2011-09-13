@@ -155,9 +155,6 @@
     <ClInclude Include="ui_element_configuration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui_element_configuration_host.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="uie_element.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -168,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="playlist_queue_item_watcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_element_host.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

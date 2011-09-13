@@ -60,7 +60,7 @@ BOOL ui_element_base::OnInitDialog(CWindow, LPARAM, HWND wnd /*= NULL*/) {
 	}
 	
 
-	m_listview.SetConfigurationHost(this);
+	m_listview.SetHost(this);
 
 	SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, WS_EX_STATICEDGE);
 
@@ -202,4 +202,54 @@ void ui_element_base::get_configuration(ui_element_settings** configuration) {
 	// we just return (already parsed) m_settings
 	// this works because config is not changed outside of this control
 	*configuration = &m_settings;
+}
+
+bool ui_element_base::is_popup() {
+	TRACK_CALL_TEXT("ui_element_base::is_popup");
+	// hack: UI element is hosted in a popup 
+	// <-> parent of parent of the ui element is main window
+	HWND wnd = get_wnd();
+	PFC_ASSERT( wnd != NULL );
+	PFC_ASSERT( ::IsWindow(wnd) );
+	
+	HWND parent = ::GetParent(wnd);
+	PFC_ASSERT( parent != NULL );
+	PFC_ASSERT( ::IsWindow(parent) );
+
+	HWND parentOfParent = ::GetParent(parent);
+	PFC_ASSERT( parentOfParent != NULL );
+	PFC_ASSERT( ::IsWindow(parentOfParent) );
+
+#ifdef _DEBUG
+	char wndBuf[64];
+	char parentBuf[64];
+	char parparentBuf[64];
+	char mainBuf[64];
+	sprintf(wndBuf, "%p", wnd);
+	sprintf(parentBuf, "%p", parent);
+	sprintf(parparentBuf, "%p", parentOfParent);
+	sprintf(mainBuf, "%p", core_api::get_main_window());
+	DEBUG_PRINT << "ui_element_base::is_popup(): wnd:" << wndBuf << ". parent: " << parentBuf << ". parent of parent: " << parparentBuf << ". main: " << mainBuf;
+#endif
+
+	return parentOfParent == core_api::get_main_window();
+}
+
+void ui_element_base::close() {
+	TRACK_CALL_TEXT("ui_element_base::close");
+	if(!is_popup()) {
+		DEBUG_PRINT << "Close() rejected since ui element is not hosted in a popup.";
+		return;
+	}
+
+	HWND wnd = get_wnd();
+	PFC_ASSERT( wnd != NULL );
+	PFC_ASSERT( ::IsWindow(wnd) );
+	
+	HWND parent = ::GetParent(wnd);
+	PFC_ASSERT( parent != NULL );
+	PFC_ASSERT( ::IsWindow(parent) );
+
+	BOOL ret = ::PostMessage(parent, WM_CLOSE, (WPARAM) 0, (LPARAM) 0);
+	PFC_ASSERT( ret );
 }

@@ -7,7 +7,7 @@
 #include "DropTargetImpl.h"
 #include "config.h"
 #include "queuecontents_titleformat_hook.h" 
-#include "ui_element_configuration_host.h"
+#include "ui_element_host.h"
 #include "reorder_helpers.h"
 #include "queuecontents_lock.h"
 
@@ -133,7 +133,7 @@ public:
 	// Called when queue is changed
 	void QueueRefresh();	
 
-	void SetConfigurationHost(ui_element_configuration_host* host);
+	void SetHost(ui_element_host* host);
 
 	// Column modifications
 	void AddUIColumn(long column_id);
@@ -283,7 +283,7 @@ private:
 	// insert marker line weight
 	static const int LINEWEIGHT = 3;
 
-	ui_element_configuration_host* m_host;
+	ui_element_host* m_host;
 
 	pfc::array_staticsize_t<long> m_header_context_menu_column_ids;
 

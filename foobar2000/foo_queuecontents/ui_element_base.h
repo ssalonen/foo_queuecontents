@@ -1,15 +1,15 @@
 #pragma once
 #include "stdafx.h"
 #include "ui_element_configuration.h"
-#include "ui_element_configuration_host.h"
+#include "ui_element_host.h"
 #include "window_manager.h"
 #include "resource.h"
 #include "listbox.h"
 #include "queue_helpers.h"
 
 
-class ui_element_base : public window_manager_window, public ui_element_configuration_host,
-public metadb_io_callback_dynamic_impl_base {
+class ui_element_base : public window_manager_window, public ui_element_host,
+	public metadb_io_callback_dynamic_impl_base {
 public:		
 	// what to do when window_manager requests refresh
 	virtual void Refresh();
@@ -21,6 +21,9 @@ public:
 	virtual void get_configuration(ui_element_settings** configuration);
 	virtual HWND get_wnd() = 0;
 	virtual void InvalidateWnd();
+
+	virtual bool is_popup();
+	virtual void close();
 
 	// metadb_io_callback_dynamic
 	virtual void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook);

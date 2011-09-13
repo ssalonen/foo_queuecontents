@@ -65,7 +65,7 @@ void CCustomListView::DrawSelectionRectangle(CDC & cdc, const CRect & rect, cons
 	cdc.LineTo(rect.TopLeft());	
 }
 
-void CCustomListView::SetConfigurationHost(ui_element_configuration_host* host) {
+void CCustomListView::SetHost(ui_element_host* host) {
 	m_host = host;
 }
 
@@ -1737,11 +1737,8 @@ void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		SelectRelativeToCurrentlyFocusedItem(direction, page, false);
 	} else if(nChar == VK_ESCAPE) {
 		DEBUG_PRINT << "Escape pressed. Closing the window!";
-		HWND parentOfParent = ::GetParent(GetParent());
-		HWND main = core_api::get_main_window();
-		if(main == ::GetParent(parentOfParent)) {
-			BOOL ret = ::PostMessage(parentOfParent, WM_CLOSE, (WPARAM) 0, (LPARAM) 0);
-			DEBUG_PRINT << "DestroyWindow success: " << ret;
+		if(m_host->is_popup()) {
+			m_host->close();
 		} else {
 			DEBUG_PRINT << "Window closing cancelled (embedded element).";
 		}

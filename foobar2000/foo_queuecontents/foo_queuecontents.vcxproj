@@ -146,7 +146,7 @@
     <ClInclude Include="uie_element.h" />
     <ClInclude Include="ui_element_base.h" />
     <ClInclude Include="ui_element_configuration.h" />
-    <ClInclude Include="ui_element_configuration_host.h" />
+    <ClInclude Include="ui_element_host.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>
   <ItemGroup>
