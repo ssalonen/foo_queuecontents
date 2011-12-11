@@ -176,7 +176,7 @@ public:
 			}
 		}
 #endif
-			reorder_helpers::move_items_hold_structure_reordering(up, indices_to_move, new_indices, ordering, queueCount);
+		reorder_helpers::move_items_hold_structure_reordering(up, indices_to_move, new_indices, ordering, queueCount);
 	}
 
 	// Calculates the reordering when items move in to moveIndex

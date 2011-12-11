@@ -19,10 +19,21 @@ public:
 
 		DEBUG_PRINT << "move_items_hold_structure_reordering. How many items we are moving?" << indices_to_move_count;
 
+		new_indices.remove_all();
+
 		// We do nothing if nothing selected
 		if(!indices_to_move_count) return;
-		if(item_count == 1) return;
-		if(indices_to_move_count == item_count) return;
+
+		// Special cases
+		if(item_count == 1) {
+			new_indices.add_items(indices_to_move);
+			for(t_size i = 0; i < item_count; i++) { ordering.add_item(i); } // identity
+			return;
+		}
+		if(indices_to_move_count == item_count) {
+			new_indices.add_items(indices_to_move);
+			for(t_size i = 0; i < item_count; i++) { ordering.add_item(i); } // identity
+		}
 
 		PFC_ASSERT(item_count >= indices_to_move_count);
 
@@ -96,6 +107,8 @@ public:
 	static void move_items_reordering(int moveIndex, const pfc::list_base_const_t<t_size> & indicesToMove, pfc::list_base_t<t_size> & newIndices, pfc::list_t<t_size>& ordering, int item_count) {
 		TRACK_CALL_TEXT("reorder_helpers::move_items_reordering");
 		t_size dragged_items_count = indicesToMove.get_count();
+
+		newIndices.remove_all();
 		
 		pfc::avltree_t<t_size> dragged_items_set;
 		
