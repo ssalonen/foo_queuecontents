@@ -33,6 +33,7 @@ public:
 		if(indices_to_move_count == item_count) {
 			new_indices.add_items(indices_to_move);
 			for(t_size i = 0; i < item_count; i++) { ordering.add_item(i); } // identity
+			return;
 		}
 
 		PFC_ASSERT(item_count >= indices_to_move_count);
