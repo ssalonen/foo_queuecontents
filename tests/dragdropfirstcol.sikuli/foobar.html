@@ -1,0 +1,193 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }  
+         
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>dragdropfirstcol.sikuli\dragdropfirstcol.sikuli</h2> <a href="dragdropfirstcol.sikuli\dragdropfirstcol.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+Settings.MinSimilarity = <span class="dig">0.90</span>
+<span class="skw">wait</span>(<img src="TESTTESTTEST.png" />)
+
+row_h = <span class="dig">21.3333</span>
+firstCol = <span class="skw">find</span>(<img src="Default.png" />)
+firstCol = firstCol.moveTo(firstCol.getTopLeft().below(int(row_h*<span class="dig">2.0</span>)))
+<span class="cmt"># Activate first column
+</span><span class="skw">click</span>(firstCol.getBottomRight())
+
+<span class="cmt">#ctrl+c ctrl+v
+</span><span class="skw">type</span>(<span class="str">'c'</span>, KeyModifier.CTRL)
+<span class="skw">type</span>(<span class="str">'v'</span>, KeyModifier.CTRL)
+
+<span class="kw">def</span> assert_order():
+    mouseMove(firstCol)
+    tmp = Settings.MinSimilarity
+    Settings.MinSimilarity = <span class="dig">0.99</span>
+    <span class="kw">assert</span> exists(<img src="BCON-1.png" />), <span class="str">'B column messed up!'</span>
+    <span class="kw">assert</span> exists(<img src="ACON-1.png" />), <span class="str">'A column messed up!'</span>
+    Settings.MinSimilarity = tmp
+
+
+<span class="kw">def</span> get_row_region(index=<span class="dig">0</span>):
+    tmp = Region(firstCol)
+    <span class="kw">return</span> tmp.moveTo(tmp.getTopLeft().below(int(index*row_h)))
+
+<span class="kw">def</span> remove_all_from_queue():
+    <span class="skw">wait</span>(<span class="dig">0.5</span>)
+    <span class="skw">click</span>(get_row_region(<span class="dig">0</span>).getBottomRight())
+    <span class="skw">type</span>(<span class="str">'a'</span>, KeyModifier.CTRL)
+    <span class="skw">type</span>(<span class="str">'q'</span>, KeyModifier.SHIFT + KeyModifier.CTRL)
+
+<span class="kw">def</span> add_to_queue(index=<span class="dig">0</span>):
+    <span class="skw">wait</span>(<span class="dig">0.5</span>)
+    <span class="cmt">#get_row_region(index).highlight(0.2)
+</span>    <span class="skw">click</span>(get_row_region(<span class="dig">0</span>).getBottomRight())
+    <span class="kw">for</span> i <span class="kw">in</span> range(index): <span class="skw">type</span>(Key.DOWN)
+    <span class="skw">type</span>(<span class="str">'q'</span>, KeyModifier.CTRL)
+
+<span class="kw">def</span> remove_from_queue(index=<span class="dig">1</span>):
+    <span class="skw">wait</span>(<span class="dig">0.5</span>)
+    <span class="cmt">#get_row_region(index).highlight(0.2)
+</span>    <span class="skw">click</span>(get_row_region(<span class="dig">0</span>).getBottomRight())
+    <span class="kw">for</span> i <span class="kw">in</span> range(index): <span class="skw">type</span>(Key.DOWN)
+    <span class="skw">type</span>(<span class="str">'q'</span>, KeyModifier.SHIFT + KeyModifier.CTRL)
+
+<span class="kw">def</span> drag_drop_rows(start_index, end_index):
+    reg = get_row_region(start_index)
+    tmp = Settings.MoveMouseDelay
+
+    dir = -<span class="dig">1</span> <span class="kw">if</span> start_index - end_index &gt; <span class="dig">0</span> <span class="kw">else</span> <span class="dig">1</span>
+    Settings.MoveMouseDelay = <span class="dig">0.5</span>
+    <span class="skw">wait</span>(<span class="dig">0.5</span>)
+    <span class="skw">click</span>(reg)
+    <span class="skw">wait</span>(<span class="dig">0.5</span>)
+    <span class="skw">dragDrop</span>(reg, get_row_region(end_index).below(int(dir*row_h)))
+    Settings.MoveMouseDelay = tmp
+
+
+remove_all_from_queue()
+
+<span class="cmt"># Initialize
+</span>Settings.MoveMouseDelay = <span class="dig">0.1</span>
+testCol = <span class="skw">find</span>(<img src="TESTTESTTEST.png" />)
+
+<span class="cmt"># Hide all columns except TEST column
+</span><span class="cmt">#
+</span><span class="skw">rightClick</span>(testCol)
+
+testcol_enabled = <span class="skw">find</span>(<img src="TESTTESTTEST-1.png" />)
+other_columns_enabled = testcol_enabled.above(<span class="dig">400</span>)
+<span class="kw">assert</span> testcol_enabled, <span class="str">'test column must be visible'</span>
+
+all_columns = sorted(other_columns_enabled.findAll(<img src="1320779565117.png" />),
+                      key=<span class="kw">lambda</span> m: m.y)
+all_columns = all_columns[<span class="dig">1</span>:] <span class="cmt"># remove hide header</span>
+<span class="kw">for</span> checked_column <span class="kw">in</span> all_columns:
+    <span class="skw">rightClick</span>(testCol)
+    <span class="skw">click</span>(checked_column)
+
+
+<span class="cmt"># Show A and B cols
+</span><span class="cmt"># + Album
+</span><span class="skw">rightClick</span>(testCol)
+<span class="skw">click</span>(<img src="1320781085864.png" />)
+<span class="skw">rightClick</span>(testCol)
+<span class="skw">click</span>(<img src="1320781103605.png" />)
+<span class="skw">rightClick</span>(testCol)
+<span class="skw">click</span>(<img src="Album.png" />)
+
+<span class="cmt"># Extend cols
+</span>add_to_queue(<span class="dig">0</span>)
+<span class="skw">doubleClick</span>(<img src="1320781277778.png" />)
+<span class="skw">doubleClick</span>(Pattern(<img src="Albu.png" />).targetOffset(-<span class="dig">7</span>,<span class="dig">0</span>))
+
+remove_all_from_queue()
+
+
+add_to_queue(<span class="dig">1</span>)
+add_to_queue(<span class="dig">2</span>)
+add_to_queue(<span class="dig">5</span>)
+
+assert_order()
+drag_drop_rows(<span class="dig">3</span>, <span class="dig">1</span>)
+assert_order()
+
+<span class="cmt"># Reorder columns
+</span><span class="cmt"># Reorder rows
+</span>
+
+assert_order()
+<span class="skw">dragDrop</span>(<img src="1320779050872.png" />, <img src="1320779075518.png" />)
+assert_order()
+drag_drop_rows(<span class="dig">1</span>, <span class="dig">3</span>)
+
+assert_order()
+
+<span class="kw">print</span> <span class="str">"TESTS PASSED!"</span>
+</pre>
+</body>
+</html>
