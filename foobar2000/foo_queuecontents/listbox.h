@@ -34,8 +34,12 @@ enum {
 	ID_REMOVE = 2,
 	// ID for "Move to Top" and 
 	ID_MOVE_TOP = 3,
+	// ID for "Move Up"
+	ID_MOVE_UP = 4,
+	// ID for "Move Down"
+	ID_MOVE_DOWN = 5,
 	// ID for "Move to Bottom"
-	ID_MOVE_BOTTOM = 4		
+	ID_MOVE_BOTTOM = 6		
 
 	/*
 	// The range ID_CONTEXT_FIRST through ID_CONTEXT_LAST is reserved
@@ -195,6 +199,8 @@ private:
 	void OnSetFocus(CWindow wndOld);
 	void OnKillFocus(CWindow wndFocus);
 
+	int IndexToOrder(int index);
+
 	// direction = 0 <-> focused, direction < 0 upper, direction > 0 lower
 	void SelectRelativeToCurrentlyFocusedItem(int direction, bool page, bool unionselection); 
 
@@ -208,11 +214,11 @@ private:
 	
 	// Methods for adding items to listview control:
 	// Called when adding a new column
-	void AddItems(pfc::list_t<t_playback_queue_item> items, t_size column);
+	void AddItems(pfc::list_t<t_playback_queue_item> items, t_size column_order);
 	void AddItems(pfc::list_t<t_playback_queue_item> items);
 	void AddItem(t_playback_queue_item item, t_size index);
 	// Adds Item to a certain column
-	void AddItem(t_playback_queue_item item, t_size index, t_size column);
+	void AddItem(t_playback_queue_item item, t_size index, t_size column_index);
 
 	// Other
 	// process ESC etc. messages
@@ -231,6 +237,8 @@ private:
 	void ShowFocusRectangle();
 
 	void SetSharedSelection(metadb_handle_list_cref p_items);	
+
+	void _print_header_debug_info(); // for debugging columns
 
 	// This is used to notify other components of the selection
 	// in our window. In this overly simplistic case, our selection

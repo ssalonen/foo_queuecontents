@@ -196,17 +196,31 @@ bool CCustomListView::UpdateSettingsWidths() {
 	return ret;
 }
 
+int CCustomListView::IndexToOrder(int iIndex) {
+	int columnCount = GetHeader().GetItemCount();
+
+	for(int order = 0; order < columnCount; order++) {
+		if(GetHeader().OrderToIndex(order) == iIndex) {
+			return order;
+		}
+	}
+	return -1;
+}
+
 LRESULT CCustomListView::OnHeaderEndDrag(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled) {
 	TRACK_CALL_TEXT("CCustomListView::OnHeaderEndDrag");
 	LPNMHEADER pNMH = reinterpret_cast<LPNMHEADER>( lParam );
 	DEBUG_PRINT << "OnHeaderEndDrag. m_header_dragging:" << m_header_dragging;
+
+	_print_header_debug_info();
+
 	// The method is called twice for some reason, this prevents it
 	if(m_header_dragging) {
 		PFC_ASSERT( pNMH->pitem->mask & HDI_ORDER );
 		if(pNMH->pitem->mask & HDI_ORDER) {
 			int columnCount = GetHeader().GetItemCount();
 			pfc::array_staticsize_t<int> orderarray(columnCount);
-			GetHeader().GetOrderArray(columnCount, &orderarray[0]);		
+			GetHeader().GetOrderArray(columnCount, &orderarray[0]);
 			
 			// Look matching column ORDER based on iItem
 			int from_column_order = -1;
@@ -551,6 +565,8 @@ void CCustomListView::BuildListItemContextMenu(CMenuHandle menu, unsigned p_id_b
 	menu.AppendMenu(MF_SEPARATOR);
 	menu.AppendMenu(MF_STRING, ID_REMOVE + p_id_base, _T("Remove"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_TOP + p_id_base, _T("Move to Top"));
+	menu.AppendMenu(MF_STRING, ID_MOVE_UP + p_id_base, _T("Move Up"));
+	menu.AppendMenu(MF_STRING, ID_MOVE_DOWN + p_id_base, _T("Move Down"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_BOTTOM + p_id_base, _T("Move to Bottom"));	
 }
 
@@ -626,7 +642,8 @@ void CCustomListView::CommandListItemContextMenu(unsigned p_id, unsigned p_id_ba
 		console::formatter()<< "Context menu: Remove";
 #endif
 		DeleteSelected();
-	} else if(p_id == ID_MOVE_TOP + p_id_base|| p_id == ID_MOVE_BOTTOM + p_id_base) {
+	} else if(p_id == ID_MOVE_TOP + p_id_base|| p_id == ID_MOVE_BOTTOM + p_id_base ||
+		p_id == ID_MOVE_UP + p_id_base || p_id == ID_MOVE_DOWN + p_id_base) {
 #ifdef _DEBUG
 		console::formatter()<< "Context menu: Move Top";
 #endif
@@ -640,9 +657,20 @@ void CCustomListView::CommandListItemContextMenu(unsigned p_id, unsigned p_id_ba
 
 		GetSelectedIndices(selection);
 
-		t_size new_index = (p_id == ID_MOVE_TOP + p_id_base)  ? 0 : GetItemCount();
-
-		queue_helpers::queue_move_items_reordering(new_index, selection, newSelection, ordering);
+		t_size new_index = 0;
+		
+		PFC_ASSERT( selection.get_count() > 0 );
+		if(p_id == ID_MOVE_TOP + p_id_base) {
+			new_index = 0;
+			queue_helpers::queue_move_items_reordering(new_index, selection, newSelection, ordering);
+		} else if(p_id == ID_MOVE_UP + p_id_base) {
+			queue_helpers::move_items_hold_structure_reordering(true, selection, newSelection, ordering);
+		} else if(p_id == ID_MOVE_DOWN + p_id_base) {
+			queue_helpers::move_items_hold_structure_reordering(false, selection, newSelection, ordering);
+		} else if(p_id == ID_MOVE_BOTTOM + p_id_base) {
+			new_index = GetItemCount();
+			queue_helpers::queue_move_items_reordering(new_index, selection, newSelection, ordering);
+		}		
 
 		// When the refresh occurs in the listbox it tries to hold these selections
 		SetSelectedIndices(newSelection);
@@ -987,11 +1015,12 @@ void CCustomListView::QueueRefresh() {
 
 }
 
-void CCustomListView::AddItems(pfc::list_t<t_playback_queue_item> items, t_size column) {
+void CCustomListView::AddItems(pfc::list_t<t_playback_queue_item> items, t_size column_order) {
 	TRACK_CALL_TEXT("CCustomListView::AddItems - column overload");
 	t_size count = items.get_count();
-	for(t_size i = 0; i < count; i++) {
-		AddItem(items[i], i+1, column);
+	int column_index = GetHeader().OrderToIndex(column_order);
+	for(t_size i = 0; i < count; i++) {		
+		AddItem(items[i], i+1, column_index); // Items must be passed in index order!
 	}
 }
 
@@ -1015,36 +1044,40 @@ void CCustomListView::AddItem(t_playback_queue_item handle, t_size index) {
 
 	t_size columnCount = settings->m_columns.get_count();
 
-	for(t_size i = 0; i < columnCount; i++) {
-		AddItem(handle, index, i);
+	for(t_size column_index = 0; column_index < columnCount; column_index++) {
+		DEBUG_PRINT << "AddItem on row " << index << " in column (index) " << column_index;
+		AddItem(handle, index, column_index); // Items must be passed in index order!
 	}
 }
 
-void CCustomListView::AddItem(t_playback_queue_item handle, t_size index, t_size column) {
+void CCustomListView::AddItem(t_playback_queue_item handle, t_size index, t_size column_index) {
 	TRACK_CALL_TEXT("CCustomListView::AddItem - column overload");
 	pfc::string8 itemString;
 	service_ptr_t<titleformat_object> format;
 	m_hook.setData(index, handle);
 
+	int column_order = IndexToOrder(column_index);
+
 	PFC_ASSERT(m_host != NULL);	
 	ui_element_settings* settings;
 	m_host->get_configuration(&settings);
 
-	long columnId = settings->m_columns[column].m_id;
+	long columnId = settings->m_columns[column_order].m_id;
 
 	pfc::map_t<long, ui_column_definition>::const_iterator column_definition = cfg_ui_columns.find(columnId);
 
 	PFC_ASSERT(column_definition.is_valid());
 	if(!column_definition.is_valid()) {
 		// The column is not valid, remove it from configuration
-		settings->m_columns.remove_by_idx(column);
+		settings->m_columns.remove_by_idx(column_order);
 	}
 
 	// We use our own format hook for interpreting %queue_index% etc. as it doesn't work default 
 	static_api_ptr_t<titleformat_compiler>()->compile( format, column_definition->m_value.m_pattern);	
 	handle.m_handle->format_title(&m_hook, itemString, format, NULL);
 
-	CListViewCtrl::AddItem(index-1, column, pfc::stringcvt::string_os_from_utf8(itemString));
+	DEBUG_PRINT << "CListViewCtrl::AddItem on row " << (index-1) << " in column (index) " << column_index;
+	CListViewCtrl::AddItem(index-1, column_index, pfc::stringcvt::string_os_from_utf8(itemString));
 
 	format.release();
 }
@@ -1689,6 +1722,39 @@ void CCustomListView::ShowFocusRectangle() {
 	::SendMessage(*this, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
 }
 
+#ifdef _DEBUG
+
+void CCustomListView::_print_header_debug_info() {
+	int columnCount = GetHeader().GetItemCount();
+	pfc::array_staticsize_t<int> orderarray(columnCount);
+	GetHeader().GetOrderArray(columnCount, &orderarray[0]);
+	DEBUG_PRINT << "== ORDERARRAY ==";
+	for(int w = 0; w < columnCount; w++) {
+		CRect r;
+		int index = GetHeader().OrderToIndex(w);
+		GetHeader().GetItemRect(index, &r);
+		DEBUG_PRINT << "orderArray[order=" << w << "] = index " << orderarray[w] << " = " << index << ". x=" << r.left;
+	}
+	DEBUG_PRINT << "== /ORDERARRAY ==";
+
+	DEBUG_PRINT << "== SETTINGS ==";
+	PFC_ASSERT(m_host != NULL);	
+	ui_element_settings* settings;
+	m_host->get_configuration(&settings);
+	for(t_size w = 0; w < settings->m_columns.get_count(); w++) {
+		long column_id = settings->m_columns[w].m_id;
+		PFC_ASSERT(cfg_ui_columns.exists(column_id));
+		pfc::map_t<long, ui_column_definition>::const_iterator column_settings = cfg_ui_columns.find(column_id);		
+		DEBUG_PRINT << "cfg_ui_columns[order=" << w << "] = id " << column_id << ". Name: " << column_settings->m_value.m_name; 
+	}
+	
+	DEBUG_PRINT << "== /SETTINGS ==";
+}
+#else
+void CCustomListView::_print_header_debug_info(CCustomListView & list) {}
+#endif
+
+
 void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {	
 	TRACK_CALL_TEXT("CCustomListView::OnKeyDown");
 	char character = static_cast<char>(nChar);
@@ -1702,6 +1768,15 @@ void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 	bool isPgDown = ((GetKeyState(VK_NEXT) & 0x8000) != 0);
 	int direction = (isUp || isPgUp) ? -1 : 1;
 	bool page = isPgUp || isPgDown;
+
+#ifdef _DEBUG
+	bool isF5Down = ((GetKeyState(VK_F5) & 0x8000) != 0);
+	bool isF6Down = ((GetKeyState(VK_F6) & 0x8000) != 0);
+	bool isF7Down = ((GetKeyState(VK_F7) & 0x8000) != 0);
+	bool isF8Down = ((GetKeyState(VK_F8) & 0x8000) != 0);
+	bool isF9Down = ((GetKeyState(VK_F9) & 0x8000) != 0);
+	bool isDbgCommand = isF5Down ||isF6Down || isF7Down || isF8Down || isF9Down;
+#endif
 
 	SetFocus();
 	ShowFocusRectangle();
@@ -1742,6 +1817,31 @@ void CCustomListView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		} else {
 			DEBUG_PRINT << "Window closing cancelled (embedded element).";
 		}
+#ifdef _DEBUG
+	} else if(isDbgCommand) {
+		DEBUG_PRINT << "DEBUG-KEY-COMMANDS: F5 (print col info), F6 (add item to subitem0), F7 (add item to subitem 1), F8 (add item to subitem2), F9 (clear all items)";
+		pfc::list_t<t_playback_queue_item> items;
+		metadb_handle_list some_meta_handles;
+		static_api_ptr_t<playlist_manager>()->activeplaylist_get_items(some_meta_handles, bit_array_range(0, 1));
+		t_playback_queue_item queue_item;
+		queue_item.m_handle = some_meta_handles[0];
+		items.add_item(queue_item);
+
+		if(isF5Down) {
+			_print_header_debug_info();
+		} else if (isF6Down) {			
+			AddItems(items, 0);			
+		} else if(isF7Down) {
+			AddItems(items, 1);
+
+		} else if(isF8Down) {
+			AddItems(items, 2);
+			
+		} else if(isF9Down) {
+			SelectAll();
+			DeleteSelected();
+		}
+#endif
 	} else {
 		DEBUG_PRINT << "Listview doesn't know what to do with this OnKeyDown => SetMsgHandled(FALSE)";
 		// We don't know what to do about it so let's someone else handle it
