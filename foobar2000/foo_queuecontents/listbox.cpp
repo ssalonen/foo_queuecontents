@@ -465,13 +465,20 @@ void CCustomListView::BuildContextMenu(CPoint screen_point, CMenuHandle menu, un
 		BuildHeaderContextMenu(menu, p_id_base, screen_point);
 	} else {
 		CPoint pt(screen_point);
-		UINT flags;
+		LVHITTESTINFO hitTestInfo;
 		ScreenToClient(&pt);
-#ifdef _DEBUG
-		console::formatter() << "Hit item with index " << HitTest(pt, &flags);
-#endif
+		hitTestInfo.pt = pt;
+
 		// Test if we clicked an item
-		if(HitTest(pt, &flags) >= 0) {
+		if(HitTest(&hitTestInfo) >= 0) {
+			// If right clicked to non-selected item -> deselect all other items
+			pfc::list_t<t_size> selected;
+			GetSelectedIndices(selected);
+			if(!selected.have_item(hitTestInfo.iItem)) {
+				SetSelectedIndices(pfc::list_single_ref_t<t_size>(hitTestInfo.iItem));
+				SetItemState(hitTestInfo.iItem, LVIS_FOCUSED, LVIS_FOCUSED);
+			}
+
 			BuildListItemContextMenu(menu, p_id_base, pt);
 		} else {
 			BuildListNoItemContextMenu(menu, p_id_base, screen_point);
@@ -561,13 +568,29 @@ void CCustomListView::BuildListItemContextMenu(CMenuHandle menu, unsigned p_id_b
 #ifdef _DEBUG
 	console::formatter() << "BuildListItemContextMenu";
 #endif
+	pfc::list_t<t_size> selection;
+	GetSelectedIndices(selection);
+
+	pfc::list_t<t_playback_queue_item> queue;
+	static_api_ptr_t<playlist_manager>()->queue_get_contents(queue);	
+
+	// Show "Locate in Playlist" only if one item is selected
+	bool show_locate_in_playlist = selection.get_count() == 1;
+	PFC_ASSERT(selection.get_count() != 1 || selection[0] < queue.get_count());
+	bool is_playlist_queue = queue[selection[0]].m_playlist != pfc::infinite_size;
+	UINT locate_playlist_item = is_playlist_queue ? MF_STRING : MF_GRAYED;
+
 	AppendShowColumnHeaderMenu(menu, ID_SHOW_COLUMN_HEADER + p_id_base);
 	menu.AppendMenu(MF_SEPARATOR);
 	menu.AppendMenu(MF_STRING, ID_REMOVE + p_id_base, _T("Remove"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_TOP + p_id_base, _T("Move to Top"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_UP + p_id_base, _T("Move Up"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_DOWN + p_id_base, _T("Move Down"));
-	menu.AppendMenu(MF_STRING, ID_MOVE_BOTTOM + p_id_base, _T("Move to Bottom"));	
+	menu.AppendMenu(MF_STRING, ID_MOVE_BOTTOM + p_id_base, _T("Move to Bottom"));
+	if(show_locate_in_playlist) {
+		menu.AppendMenu(MF_SEPARATOR);
+		menu.AppendMenu(locate_playlist_item, ID_LOCATE_IN_PLAYLIST + p_id_base, _T("Locate in Playlist"));
+	}
 }
 
 void CCustomListView::BuildListNoItemContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point) {
@@ -679,7 +702,30 @@ void CCustomListView::CommandListItemContextMenu(unsigned p_id, unsigned p_id_ba
 		// queue events
 		queue_helpers::queue_reorder(ordering);
 
-	} 
+	} else if(p_id == ID_LOCATE_IN_PLAYLIST + p_id_base) {
+		pfc::list_t<t_size> selection;
+		GetSelectedIndices(selection);
+
+		pfc::list_t<t_playback_queue_item> queue;
+		static_api_ptr_t<playlist_manager>()->queue_get_contents(queue);	
+
+		DEBUG_PRINT << "Locate in playlist command. Selected: " << selection.get_count() <<
+			". In queue: " << queue.get_count();
+		
+		if(selection.get_count() != 1) return; // Shouldn't happen.
+			
+		DEBUG_PRINT << "First selected (index): " << selection[0];
+		
+		PFC_ASSERT(selection[0] < queue.get_count());
+		t_playback_queue_item queue_item = queue[selection[0]];
+		DEBUG_PRINT << "Queue item corresponding the first selected, playlist: " << queue_item.m_playlist << ". item " << queue_item.m_item;
+		if(queue_item.m_playlist == pfc::infinite_size || queue_item.m_item == pfc::infinite_size) return;
+
+		DEBUG_PRINT << "Trying to show the playlist";
+		static_api_ptr_t<playlist_manager>()->playlist_set_focus_item(queue_item.m_playlist, queue_item.m_item);
+		static_api_ptr_t<playlist_manager>()->playlist_ensure_visible(queue_item.m_playlist, queue_item.m_item);
+		static_api_ptr_t<playlist_manager>()->set_active_playlist(queue_item.m_playlist);
+	}
 }
 
 void CCustomListView::CommandListNoItemContextMenu(unsigned p_id, unsigned p_id_base, CPoint point) {

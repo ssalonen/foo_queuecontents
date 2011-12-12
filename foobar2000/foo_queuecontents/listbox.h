@@ -39,7 +39,9 @@ enum {
 	// ID for "Move Down"
 	ID_MOVE_DOWN = 5,
 	// ID for "Move to Bottom"
-	ID_MOVE_BOTTOM = 6		
+	ID_MOVE_BOTTOM = 6,
+	// ID for "Locate in Playlist"
+	ID_LOCATE_IN_PLAYLIST = 7
 
 	/*
 	// The range ID_CONTEXT_FIRST through ID_CONTEXT_LAST is reserved
