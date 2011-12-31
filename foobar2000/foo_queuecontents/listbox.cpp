@@ -1759,7 +1759,7 @@ void CCustomListView::_print_header_debug_info() {
 	DEBUG_PRINT << "== /SETTINGS ==";
 }
 #else
-void CCustomListView::_print_header_debug_info(CCustomListView & list) {}
+void CCustomListView::_print_header_debug_info() {}
 #endif
 
 
