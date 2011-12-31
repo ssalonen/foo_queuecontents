@@ -722,9 +722,10 @@ void CCustomListView::CommandListItemContextMenu(unsigned p_id, unsigned p_id_ba
 		if(queue_item.m_playlist == pfc::infinite_size || queue_item.m_item == pfc::infinite_size) return;
 
 		DEBUG_PRINT << "Trying to show the playlist";
-		static_api_ptr_t<playlist_manager>()->playlist_set_focus_item(queue_item.m_playlist, queue_item.m_item);
-		static_api_ptr_t<playlist_manager>()->playlist_ensure_visible(queue_item.m_playlist, queue_item.m_item);
-		static_api_ptr_t<playlist_manager>()->set_active_playlist(queue_item.m_playlist);
+		//static_api_ptr_t<playlist_manager>()->playlist_set_focus_item(queue_item.m_playlist, queue_item.m_item);
+		//static_api_ptr_t<playlist_manager>()->playlist_ensure_visible(queue_item.m_playlist, queue_item.m_item);
+		//static_api_ptr_t<playlist_manager>()->set_active_playlist(queue_item.m_playlist);
+		DEBUG_PRINT << "OK? " << m_host->ActivatePlaylistUIElement();
 	}
 }
 

@@ -253,3 +253,4 @@ void ui_element_base::close() {
 	BOOL ret = ::PostMessage(parent, WM_CLOSE, (WPARAM) 0, (LPARAM) 0);
 	PFC_ASSERT( ret );
 }
+

@@ -97,6 +97,27 @@ void dui_element::OnFinalMessage(HWND hWnd){
 }
 
 
+bool dui_element::ActivatePlaylistUIElement() {
+	TRACK_CALL_TEXT("dui_element::ActivatePlaylistUIElement");
+	//if(!m_callback.is_valid()) {
+	//	return false;
+	//}
+
+	//service_enum_t<ui_element> e;
+	//service_ptr_t<ui_element> ptr;
+
+	//while(e.next(ptr)) {
+	//	if(ptr->get_subclass() == ui_element_subclass_playlist_renderers) {
+	//		service_ptr_t<ui_element_instance> instance = service_by_guid<ui_element_instance>(ptr->get_guid());
+	//		PFC_ASSERT( instance.is_valid() );
+
+	//		return m_callback->request_activation(instance);
+	//	}
+	//}
+
+	return false;
+}
+
 static service_factory_single_t<ui_element_myimpl> g_ui_element_myimpl_factory;
 
 

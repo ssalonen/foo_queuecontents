@@ -18,5 +18,6 @@ public:
 };
 
 class ui_element_host : public ui_element_configuration_host, public ui_element_container {
-
+public:
+	virtual bool ActivatePlaylistUIElement() = 0;
 };

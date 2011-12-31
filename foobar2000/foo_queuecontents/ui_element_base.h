@@ -6,7 +6,7 @@
 #include "resource.h"
 #include "listbox.h"
 #include "queue_helpers.h"
-
+#include "../columns_ui-sdk/ui_extension.h"
 
 class ui_element_base : public window_manager_window, public ui_element_host,
 	public metadb_io_callback_dynamic_impl_base {
@@ -39,6 +39,9 @@ protected:
 	virtual void RefreshVisuals() = 0;	
 	// when window dies
 	virtual void OnFinalMessage(HWND /*hWnd*/);
+
+	virtual bool ActivatePlaylistUIElement() = 0;
+
 	CCustomListView m_listview;	
 	ui_element_settings m_settings;
 

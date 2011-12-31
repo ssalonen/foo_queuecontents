@@ -39,8 +39,10 @@ public:
 	virtual void edit_mode_context_menu_command(const POINT & p_point,bool p_fromkeyboard,unsigned p_id,unsigned p_id_base);
 	virtual bool edit_mode_context_menu_get_focus_point(POINT & p_point);
 	virtual bool edit_mode_context_menu_get_description(unsigned p_id,unsigned p_id_base,pfc::string_base & p_out) {return false;}
-
 	
+
+	virtual bool ActivatePlaylistUIElement();
+
 	// UI element configuration
 	virtual void save_configuration();	
 

@@ -92,6 +92,23 @@ LRESULT uie_element::on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return lResult;
 }
 
+bool uie_element::ActivatePlaylistUIElement() {
+	TRACK_CALL_TEXT("uie_element::ActivatePlaylistUIElement");
+	service_enum_t<ui_extension::window> e;
+	ui_extension::window_ptr ptr;
+
+	while(e.next(ptr)) {
+		if(ptr->get_type() & ui_extension::type_playlist) {
+			ui_extension::playlist_window_ptr playlist_ptr;
+			if(ptr->service_query_t<ui_extension::playlist_window>(playlist_ptr)) {
+				playlist_ptr->set_focus();
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 ui_extension::window_factory<uie_element> blah;
 columns_ui::colours::client::factory<queuecontents_uie_colours_client> blah2;
