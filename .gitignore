@@ -6,6 +6,8 @@
 *.lib
 *.suo
 
+Thumbs.db
+
 /foo_queuecontents-*-binaries.zip
 /foo_queuecontents-*-sources.zip
 /foo_queuecontents.zip
@@ -22,3 +24,5 @@ foobar2000/shared
 foobar2000/ATLHelpers
 foobar2000/columns_ui-sdk
 foobar2000/foobar2000_component_client
+
+tests/foobar2000_test/
