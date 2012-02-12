@@ -62,7 +62,9 @@ BOOL ui_element_base::OnInitDialog(CWindow, LPARAM, HWND wnd /*= NULL*/) {
 
 	m_listview.SetHost(this);
 
-	SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, WS_EX_STATICEDGE);
+	//SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, WS_EX_STATICEDGE); // "Grey", DUI default
+	//SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, 0); // No border"
+	SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, WS_EX_CLIENTEDGE); // "Sunken"
 
 	// Update is needed to refresh border, see Remarks from http://msdn.microsoft.com/en-us/library/aa931583.aspx
 	SetWindowPos(get_wnd(), 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
