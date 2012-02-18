@@ -7,7 +7,14 @@
 
 #define COMPONENTNAME "Queue Contents Editor"
 #define COMPONENTVERSION "0.5"
-#define COMPONENTCONFIGVERSION 3
+#define COMPONENTCONFIGVERSION 4
+
+// Changelog in config versions
+/*
+v4:
+- unsigned long m_border introduced in ui_element_settings
+*/
+
 #define TITLEFORMAT_WIKIPAGEURL "http://wiki.hydrogenaudio.org/index.php?title=Foobar2000:Titleformat_Reference"
 #define COMPONENT_WIKIPAGEURL "http://wiki.hydrogenaudio.org/index.php?title=Foobar2000:Components/Queue_Contents_Editor_(foo_queuecontents)"
 #define FORUMURL "http://www.hydrogenaudio.org/forums/index.php?showtopic=73648"

@@ -44,6 +44,8 @@ public:
 	// UI element configuration
 	virtual void save_configuration();	
 
+	virtual bool is_dui();
+
 	//WTL message map
 	BEGIN_MSG_MAP_EX(dui_element)
 		MSG_WM_INITDIALOG(OnInitDialog)	// Init code

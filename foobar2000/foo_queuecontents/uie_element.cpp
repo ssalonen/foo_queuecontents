@@ -11,6 +11,10 @@ HWND uie_element::get_wnd() const {
 	return m_listview.GetParent();
 }
 
+bool uie_element::is_dui() {
+	return false;
+}
+
 void uie_element::RefreshVisuals() {
 	TRACK_CALL_TEXT("uie_element::RefreshVisuals");
 	console::formatter() << "Refresh visuals";

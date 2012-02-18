@@ -25,6 +25,8 @@ public:
 	virtual bool is_popup();
 	virtual void close();
 
+	virtual bool is_dui() = 0; // True with DUI, False with CUI
+
 	// metadb_io_callback_dynamic
 	virtual void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook);
 protected:

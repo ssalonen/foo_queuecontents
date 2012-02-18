@@ -15,6 +15,7 @@ class ui_element_container {
 public:
 	virtual bool is_popup() = 0;
 	virtual void close() = 0;
+	virtual bool is_dui() = 0;
 };
 
 class ui_element_host : public ui_element_configuration_host, public ui_element_container {

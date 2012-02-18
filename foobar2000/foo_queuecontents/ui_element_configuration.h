@@ -19,7 +19,7 @@ public:
 // settings for single ui leement
 class ui_element_settings {
 public:
-	ui_element_settings() : m_show_column_header(true), m_relative_column_widths(false), m_control_width(100) {}
+	ui_element_settings() : m_show_column_header(true), m_relative_column_widths(false), m_control_width(100), m_columns(), m_border(WS_EX_STATICEDGE) {}
 	// Whether to show colum header
 	bool m_show_column_header;
 
@@ -31,6 +31,9 @@ public:
 
 	// order is from left-to-right
 	pfc::list_t<ui_column_settings> m_columns;
+
+	// WS_EX_STATICEDGE (dui/cui), WS_EX_CLIENTEDGE (cui) or 0=no border (cui)
+	unsigned long m_border;
 
 	bool column_exists(long id);
 	t_size column_index_from_id(long id);
@@ -65,12 +68,21 @@ FB2K_STREAM_READER_OVERLOAD(ui_element_settings) {
 		value.m_columns.remove_all();
 		stream.read_array(value.m_columns);
 
+		if(version >= 4) {
+			DEBUG_PRINT << "Reading m_border since version >= 4"
+			stream >> value.m_border
+		} else {
+			DEBUG_PRINT << "Defaulting m_border=WS_EX_STATICEDGE since version < 4"
+			value.m_border = WS_EX_STATICEDGE // DUI default border
+		}
+
 		DEBUG_PRINT << "Reading ui element settings:";
 		DEBUG_PRINT << "Config version: " << version;
 		DEBUG_PRINT << "m_show_column_header: " << value.m_show_column_header;
 		DEBUG_PRINT << "m_relative_column_widths: " << value.m_relative_column_widths;
 		DEBUG_PRINT << "m_control_width: " << value.m_control_width;
 		DEBUG_PRINT << "m_columns (size): " << value.m_columns.get_count();
+		DEBUG_PRINT << "m_border: " << value.m_border;
 
 	} catch(exception_io_data_truncation e) {
 		// We do not concern the user for nothing. If didn't even
@@ -90,6 +102,7 @@ FB2K_STREAM_READER_OVERLOAD(ui_element_settings) {
 		} else {
 			// object.m_columns is empty
 		}
+		value.m_border = WS_EX_STATICEDGE
 	}
 
 	return stream;
@@ -122,6 +135,7 @@ FB2K_STREAM_WRITER_OVERLOAD(ui_element_settings) {
 #endif
 
 	stream.write_array(value.m_columns);	
+	stream.write_int(value.m_border);
 	
 	return stream;
 }
