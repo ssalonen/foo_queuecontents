@@ -540,6 +540,7 @@ void CCustomListView::BuildHeaderContextMenu(CMenuHandle menu, unsigned p_id_bas
 	m_header_context_menu_column_ids = pfc::array_staticsize_t<long>(column_count);
 
 	AppendShowColumnHeaderMenu(menu, ID_SHOW_COLUMN_HEADER + p_id_base);
+	BuildFrameStyleContextMenu(menu, p_id_base, point);
 	menu.AppendMenu(MF_SEPARATOR);
 
 	// put all the defined columns in the context menu and check those that are
@@ -559,9 +560,9 @@ void CCustomListView::BuildHeaderContextMenu(CMenuHandle menu, unsigned p_id_bas
 
 	menu.AppendMenuW(MF_SEPARATOR);
 	UINT relative_checked = settings->m_relative_column_widths ? MF_CHECKED : MF_UNCHECKED;
-	menu.AppendMenuW(relative_checked, ID_RELATIVE_WIDTHS+p_id_base, _T("Auto-scale Columns with Window Size"));
-
+	menu.AppendMenuW(relative_checked, ID_RELATIVE_WIDTHS+p_id_base, _T("Auto-scale Columns with Window Size"));	
 }
+
 
 void CCustomListView::BuildListItemContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point) {
 	TRACK_CALL_TEXT("CCustomListView::BuildListItemContextMenu");
@@ -570,12 +571,13 @@ void CCustomListView::BuildListItemContextMenu(CMenuHandle menu, unsigned p_id_b
 #endif
 
 	AppendShowColumnHeaderMenu(menu, ID_SHOW_COLUMN_HEADER + p_id_base);
+	BuildFrameStyleContextMenu(menu, p_id_base, point);
 	menu.AppendMenu(MF_SEPARATOR);
 	menu.AppendMenu(MF_STRING, ID_REMOVE + p_id_base, _T("Remove"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_TOP + p_id_base, _T("Move to Top"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_UP + p_id_base, _T("Move Up"));
 	menu.AppendMenu(MF_STRING, ID_MOVE_DOWN + p_id_base, _T("Move Down"));
-	menu.AppendMenu(MF_STRING, ID_MOVE_BOTTOM + p_id_base, _T("Move to Bottom"));
+	menu.AppendMenu(MF_STRING, ID_MOVE_BOTTOM + p_id_base, _T("Move to Bottom"));	
 }
 
 void CCustomListView::BuildListNoItemContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point) {
@@ -584,6 +586,37 @@ void CCustomListView::BuildListNoItemContextMenu(CMenuHandle menu, unsigned p_id
 	console::formatter() << "BuildListNoItemContextMenu";
 #endif
 	AppendShowColumnHeaderMenu(menu, ID_SHOW_COLUMN_HEADER + p_id_base);
+	BuildFrameStyleContextMenu(menu, p_id_base, point);
+}
+
+void CCustomListView::BuildFrameStyleContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point) {
+	TRACK_CALL_TEXT("CCustomListView::BuildFrameStyleContextMenu");
+#ifdef _DEBUG
+	console::formatter() << "BuildFrameStyleContextMenu";
+#endif
+	PFC_ASSERT(m_host != NULL);	
+	ui_element_settings* settings;
+	m_host->get_configuration(&settings);
+
+	// Add Frame Style sub menu if using CUI
+	if(!m_host->is_dui()) {
+		CMenu frame_style_submenu;
+		frame_style_submenu.CreatePopupMenu();
+		menu.AppendMenuW(MF_STRING|MF_POPUP, frame_style_submenu.m_hMenu, _T("Frame style"));
+		
+		// None
+		UINT non_checked = MFT_RADIOCHECK | ( settings->m_border == 0 ? MF_CHECKED : MF_UNCHECKED);
+		frame_style_submenu.AppendMenuW(non_checked, ID_BORDER_NONE+p_id_base, _T("None"));
+
+		// Grey
+		UINT grey_checked = MFT_RADIOCHECK | (settings->m_border == WS_EX_STATICEDGE ? MF_CHECKED : MF_UNCHECKED);
+		frame_style_submenu.AppendMenuW(grey_checked, ID_BORDER_GREY+p_id_base, _T("Grey"));
+
+		// Sunken
+		UINT sunken_checked = MFT_RADIOCHECK | (settings->m_border == WS_EX_CLIENTEDGE ? MF_CHECKED : MF_UNCHECKED);
+		frame_style_submenu.AppendMenuW(sunken_checked, ID_BORDER_SUNKEN+p_id_base, _T("Sunken"));
+
+	}
 }
 
 void CCustomListView::CommandHeaderContextMenu(unsigned p_id, unsigned p_id_base, CPoint point) {
@@ -633,6 +666,8 @@ void CCustomListView::CommandHeaderContextMenu(unsigned p_id, unsigned p_id_base
 			AddUIColumn(column_id);
 		}
 
+	} else {
+		CommandFrameStyleContextMenu(p_id, p_id_base, point);
 	}
 }
 
@@ -687,7 +722,9 @@ void CCustomListView::CommandListItemContextMenu(unsigned p_id, unsigned p_id_ba
 		// queue events
 		queue_helpers::queue_reorder(ordering);
 
-	} 
+	} else {
+		CommandFrameStyleContextMenu(p_id, p_id_base, point);	
+	}
 }
 
 void CCustomListView::CommandListNoItemContextMenu(unsigned p_id, unsigned p_id_base, CPoint point) {
@@ -697,7 +734,31 @@ void CCustomListView::CommandListNoItemContextMenu(unsigned p_id, unsigned p_id_
 #endif
 	if(p_id == ID_SHOW_COLUMN_HEADER + p_id_base) {
 		ShowHideColumnHeader();
+	} else {
+		CommandFrameStyleContextMenu(p_id, p_id_base, point);
 	}
+}
+
+void CCustomListView::CommandFrameStyleContextMenu(unsigned p_id, unsigned p_id_base, CPoint point) {
+	TRACK_CALL_TEXT("CCustomListView::BuildFrameStyleContextMenu");
+#ifdef _DEBUG
+	console::formatter() << "BuildFrameStyleContextMenu";
+#endif
+	PFC_ASSERT(m_host != NULL);	
+	ui_element_settings* settings;
+	m_host->get_configuration(&settings);
+
+	if(p_id == ID_BORDER_NONE + p_id_base) {
+		settings->m_border = 0;
+	} else if(p_id == ID_BORDER_GREY + p_id_base) {
+		settings->m_border = WS_EX_STATICEDGE;
+	} else if(p_id == ID_BORDER_SUNKEN + p_id_base) {
+		settings->m_border = WS_EX_CLIENTEDGE;
+	}
+
+	m_host->save_configuration();
+	// Refresh border
+	m_host->RefreshVisuals();
 }
 
 

@@ -6,7 +6,7 @@
 #pragma once
 
 #define COMPONENTNAME "Queue Contents Editor"
-#define COMPONENTVERSION "0.5"
+#define COMPONENTVERSION "0.5.1"
 #define COMPONENTCONFIGVERSION 4
 
 // Changelog in config versions

@@ -59,7 +59,9 @@ enum {
 	ID_COLUMNS_LAST = ID_COLUMNS_FIRST + 1000,	
 	ID_MORE = ID_COLUMNS_LAST + 1,
 	ID_RELATIVE_WIDTHS = ID_COLUMNS_LAST + 2, // "Auto-scale Columns with Window Size"
-
+	ID_BORDER_NONE = ID_COLUMNS_LAST + 3,
+	ID_BORDER_GREY = ID_COLUMNS_LAST + 4,
+	ID_BORDER_SUNKEN = ID_COLUMNS_LAST + 5
 };
 
 class CCustomListView : public WTL::CCustomDraw<CCustomListView>, public ATL::CWindowImpl<CCustomListView, WTL::CListViewCtrl>,
@@ -178,10 +180,12 @@ private:
 	void BuildHeaderContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point);
 	void BuildListItemContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point);
 	void BuildListNoItemContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point);
+	void BuildFrameStyleContextMenu(CMenuHandle menu, unsigned p_id_base, CPoint point);
 
 	void CommandHeaderContextMenu(unsigned p_id, unsigned p_id_base, CPoint point);
 	void CommandListItemContextMenu(unsigned p_id, unsigned p_id_base, CPoint point);
 	void CommandListNoItemContextMenu(unsigned p_id, unsigned p_id_base, CPoint point);
+	void CommandFrameStyleContextMenu(unsigned menu, unsigned p_id_base, CPoint point);
 
 	// Selection related
 	void OnMouseMove(UINT nFlags, CPoint point);

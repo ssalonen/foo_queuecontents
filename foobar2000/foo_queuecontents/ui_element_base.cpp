@@ -199,6 +199,16 @@ void ui_element_base::ColumnsChanged() {
 	m_listview.RelayoutUIColumns();
 }
 
+void ui_element_base::RefreshVisuals() {
+	TRACK_CALL_TEXT("ui_element_base::RefreshVisuals");
+	
+	// component border
+	SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, m_settings.m_border);
+
+	// Update is needed to refresh border, see Remarks from http://msdn.microsoft.com/en-us/library/aa931583.aspx
+	SetWindowPos(get_wnd(), 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
 
 
 void ui_element_base::get_configuration(ui_element_settings** configuration) {

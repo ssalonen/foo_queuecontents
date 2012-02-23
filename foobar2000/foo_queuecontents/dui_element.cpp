@@ -55,6 +55,7 @@ HWND dui_element::get_wnd() {
 
 void dui_element::RefreshVisuals()  {
 	TRACK_CALL_TEXT("dui_element::RefreshVisuals");
+	ui_element_base::RefreshVisuals();
 	t_ui_font listfont;
 	t_ui_color backgroundcolor;
 	//t_ui_color highlightcolor;

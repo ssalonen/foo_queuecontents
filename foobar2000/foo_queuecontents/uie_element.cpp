@@ -17,6 +17,7 @@ bool uie_element::is_dui() {
 
 void uie_element::RefreshVisuals() {
 	TRACK_CALL_TEXT("uie_element::RefreshVisuals");
+	ui_element_base::RefreshVisuals();
 	console::formatter() << "Refresh visuals";
 	columns_ui::colours::helper vis = columns_ui::colours::helper::helper(uie_colours_client_guid);
 	

@@ -8,7 +8,7 @@
 #include "queue_helpers.h"
 
 
-class ui_element_base : public window_manager_window, public ui_element_host,
+class ui_element_base : public ui_element_host,
 	public metadb_io_callback_dynamic_impl_base {
 public:		
 	// what to do when window_manager requests refresh
@@ -37,8 +37,8 @@ protected:
 	virtual void OnSize(UINT nType, CSize size);
 	virtual BOOL OnEraseBkgnd(CDCHandle);
 	
-	// Implementors: call m_listview's SetColors and SetFont
-	virtual void RefreshVisuals() = 0;	
+	// Implementors: call m_listview's SetColors and SetFont. Base implementation updates component border.
+	virtual void RefreshVisuals();	
 	// when window dies
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 	CCustomListView m_listview;	

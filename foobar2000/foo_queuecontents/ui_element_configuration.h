@@ -69,11 +69,11 @@ FB2K_STREAM_READER_OVERLOAD(ui_element_settings) {
 		stream.read_array(value.m_columns);
 
 		if(version >= 4) {
-			DEBUG_PRINT << "Reading m_border since version >= 4"
-			stream >> value.m_border
+			DEBUG_PRINT << "Reading m_border since version >= 4";
+			stream >> value.m_border;
 		} else {
-			DEBUG_PRINT << "Defaulting m_border=WS_EX_STATICEDGE since version < 4"
-			value.m_border = WS_EX_STATICEDGE // DUI default border
+			DEBUG_PRINT << "Defaulting m_border=WS_EX_STATICEDGE since version < 4";
+			value.m_border = WS_EX_STATICEDGE; // DUI default border
 		}
 
 		DEBUG_PRINT << "Reading ui element settings:";
@@ -82,7 +82,7 @@ FB2K_STREAM_READER_OVERLOAD(ui_element_settings) {
 		DEBUG_PRINT << "m_relative_column_widths: " << value.m_relative_column_widths;
 		DEBUG_PRINT << "m_control_width: " << value.m_control_width;
 		DEBUG_PRINT << "m_columns (size): " << value.m_columns.get_count();
-		DEBUG_PRINT << "m_border: " << value.m_border;
+		DEBUG_PRINT << "m_border: " << ((t_uint64) value.m_border);
 
 	} catch(exception_io_data_truncation e) {
 		// We do not concern the user for nothing. If didn't even
@@ -102,7 +102,7 @@ FB2K_STREAM_READER_OVERLOAD(ui_element_settings) {
 		} else {
 			// object.m_columns is empty
 		}
-		value.m_border = WS_EX_STATICEDGE
+		value.m_border = WS_EX_STATICEDGE;
 	}
 
 	return stream;
