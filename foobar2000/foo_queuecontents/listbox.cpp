@@ -740,9 +740,9 @@ void CCustomListView::CommandListNoItemContextMenu(unsigned p_id, unsigned p_id_
 }
 
 void CCustomListView::CommandFrameStyleContextMenu(unsigned p_id, unsigned p_id_base, CPoint point) {
-	TRACK_CALL_TEXT("CCustomListView::BuildFrameStyleContextMenu");
+	TRACK_CALL_TEXT("CCustomListView::CommandFrameStyleContextMenu");
 #ifdef _DEBUG
-	console::formatter() << "BuildFrameStyleContextMenu";
+	console::formatter() << "CommandFrameStyleContextMenu";
 #endif
 	PFC_ASSERT(m_host != NULL);	
 	ui_element_settings* settings;
