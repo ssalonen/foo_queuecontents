@@ -17,7 +17,7 @@ struct DragDropInformation {
 	CPoint m_point_screen;
 	CPoint m_point_client; 
 	DWORD m_pdwEffect;
-	IAsyncOperation* m_asyncOperation;
+	IDataObjectAsyncCapability* m_asyncOperation;
 	pfc::list_t<t_size> m_selection;
 	bool m_internal_dragging;
 };

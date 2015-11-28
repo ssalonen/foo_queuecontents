@@ -1,7 +1,7 @@
-Prerequisite: Visual Studio 2010 (Express does not work.)
+Prerequisite: Visual Studio 2015 Community
 1. Extract foo_queuecontents folder under <root>\SDK\foobar2000\
-2. Install WTL 8.0 under <WTLRoot>\WTL80. Available from http://sourceforge.net/projects/wtl/
-3. Have an environmental variable WTL_HOME pointing to <WTLRoot>\WTL80
+2. Install WTL 9.0 under <WTLRoot>\WTL90. Available from http://sourceforge.net/projects/wtl/
+3. Have an environmental variable WTL_HOME pointing to <WTLRoot>\WTL90
 
 As the newest SDK of columns_ui-sdk doesn't work with foobar 1.x SDK, I've modified it (according to various forum posts); the modified CUI SDK is also attached in this zip file. Accompaniying diff file is also included.
 
@@ -13,3 +13,5 @@ You must configure WTL_HOME environmental variable to "Additional Include Direct
 3. Select "All configuration" from the top left
 4. From "Configuration Properties  /  C/C++  /  General", type the following to Additional Include Directories:  $(WTL_HOME)\include\
    
+
+Platform toolset should be (for all projects): Visual Studio 2015 (v140(

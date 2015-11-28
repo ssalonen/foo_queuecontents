@@ -146,7 +146,7 @@ STDMETHODIMP DropTargetImpl::Drop(IDataObject *pDataObj, DWORD grfKeyState, POIN
 	drag_drop_information.m_point_screen = point_screen;
 	drag_drop_information.m_point_client = point_client;
 	drag_drop_information.m_pdwEffect = *pdwEffect;
-	drag_drop_information.m_asyncOperation = (IAsyncOperation*) NULL;
+	drag_drop_information.m_asyncOperation = (IDataObjectAsyncCapability*) NULL;
 	drag_drop_information.m_selection = selection;
 	drag_drop_information.m_internal_dragging = internal_dragging;
 

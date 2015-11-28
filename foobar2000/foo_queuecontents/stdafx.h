@@ -6,7 +6,7 @@
 #pragma once
 
 #define COMPONENTNAME "Queue Contents Editor"
-#define COMPONENTVERSION "0.5.1"
+#define COMPONENTVERSION "0.5.2"
 #define COMPONENTCONFIGVERSION 4
 
 // Changelog in config versions
@@ -21,7 +21,15 @@ v4:
 
 #include "targetver.h"
 
-#include "atlcrack.h"
+// cms070922: new for wtl8.0 to get atldlgs.h to compile.
+#define _WTL_FORWARD_DECLARE_CSTRING
+
+#include "atlbase.h"
+#include "atlapp.h"
+// http://www.programforge.com/7241208511/
+#define __ATLTYPES_H__
+#include <atlmisc.h>  
+
 #include "../ATLHelpers/ATLHelpers.h"
 #include "../SDK/foobar2000.h"
 #include "../helpers/helpers.h"
