@@ -43,6 +43,7 @@ protected:
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 	CCustomListView m_listview;	
 	ui_element_settings m_settings;
+	CFont m_listfont;
 
 	bool inited_successfully;
 };

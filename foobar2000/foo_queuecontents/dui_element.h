@@ -7,11 +7,14 @@ class dui_element : public ATL::CDialogImpl<dui_element>, public ui_element_inst
 	private ui_element_base { 
 
 public:
+	typedef ATL::CDialogImpl<dui_element> CDialogImplBase;
+
 	//dialog resource ID
 	enum {IDD = IDD_FORMVIEW};
 
 	// when window dies
 	virtual void OnFinalMessage(HWND /*hWnd*/);
+	~dui_element();
 	
 
 	// DUI element stuff
@@ -58,6 +61,7 @@ public:
 private:		
 	void RefreshVisuals() ;	
 	ui_element_config::ptr m_config;	
+	CFont m_listfont;
 
 protected:
 	// this must be declared as protected for ui_element_impl_withpopup<> to work.

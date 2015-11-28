@@ -46,7 +46,7 @@ void dui_element::save_configuration() {
 
 void dui_element::initialize_window(HWND parent) {	
 	TRACK_CALL_TEXT("dui_element::initialize_window");
-	Create(parent);
+	Create(parent, WS_CHILD);
 }
 
 HWND dui_element::get_wnd() {	
@@ -56,7 +56,7 @@ HWND dui_element::get_wnd() {
 void dui_element::RefreshVisuals()  {
 	TRACK_CALL_TEXT("dui_element::RefreshVisuals");
 	ui_element_base::RefreshVisuals();
-	t_ui_font listfont;
+	
 	t_ui_color backgroundcolor;
 	//t_ui_color highlightcolor;
 	t_ui_color selectioncolor;
@@ -65,10 +65,10 @@ void dui_element::RefreshVisuals()  {
 	t_ui_color insertmarkercolor = RGB(127,127,127);
 	t_ui_color selectionrectanglecolor = RGB(127,127,127);
 	t_ui_color selectedtextcolor;
-
+	
 	// Set font to listbox control
-	listfont = m_callback->query_font_ex(ui_font_lists); 
-	m_listview.SetFont(listfont);
+	m_listfont.Attach(m_callback->query_font_ex(ui_font_lists));
+	m_listview.SetFont(m_listfont);
 	
 	// Query colors and feed them forward to the listbox
 	backgroundcolor = m_callback->query_std_color(ui_color_background);
@@ -92,9 +92,16 @@ void dui_element::notify(const GUID & p_what, t_size p_param1, const void * p_pa
 void dui_element::OnFinalMessage(HWND hWnd){
 	TRACK_CALL_TEXT("dui_element::OnFinalMessage");
 	ui_element_base::OnFinalMessage(hWnd);
-
-	// Let the base class(es) handle this message...
+	m_config.release();
+	// Let the base class(es) handle this message..
 	SetMsgHandled(FALSE);
+}
+
+dui_element::~dui_element() {	
+	if (IsWindow()) {
+		OnFinalMessage(get_wnd());
+		DestroyWindow();
+	}		
 }
 
 bool dui_element::is_dui(){

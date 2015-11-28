@@ -4,6 +4,7 @@
 //http://www.codeguru.com/forum/archive/index.php/t-131726.html
 // http://www.differentpla.net/content/2004/03/using-drawdragrect-to-rubber-band-a-selection
 
+// FIXME: leaks exactly 3 GDI handles!
 
 CCustomListView::CCustomListView() : m_selected(false), m_internal_dragging(false),
 	m_prev_insert_marker(-1), m_hook(), m_selecting(false), 

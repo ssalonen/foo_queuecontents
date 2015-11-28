@@ -19,11 +19,11 @@ void uie_element::RefreshVisuals() {
 	TRACK_CALL_TEXT("uie_element::RefreshVisuals");
 	ui_element_base::RefreshVisuals();
 	console::formatter() << "Refresh visuals";
-	columns_ui::colours::helper vis = columns_ui::colours::helper::helper(uie_colours_client_guid);
+	columns_ui::colours::helper vis(uie_colours_client_guid);
 	
-	columns_ui::fonts::helper fonts = columns_ui::fonts::helper::helper(uie_font_client_guid);
-
-	m_listview.SetFont(fonts.get_font());
+	columns_ui::fonts::helper fonts(uie_font_client_guid);
+	m_listfont.Attach(fonts.get_font());
+	m_listview.SetFont(m_listfont);
 	m_listview.SetColors(vis.get_colour(columns_ui::colours::colour_background),		
 		vis.get_colour(columns_ui::colours::colour_selection_background),
 		vis.get_colour(columns_ui::colours::colour_text),
